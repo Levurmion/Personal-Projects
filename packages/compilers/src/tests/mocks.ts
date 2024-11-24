@@ -1,4 +1,4 @@
-import { createGrammar } from "..";
+import { createGrammar } from "../";
 
 export const mockGrammar = createGrammar({
     tokens: [
