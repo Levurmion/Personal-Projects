@@ -1,5 +1,6 @@
 import { createGrammar } from "..";
 import type { EnumeratedProductionRules } from "../utilities/enumerate-production-rules";
+import type { ProductionRuleInvertedIndex } from "../utilities/generate-inverted-index";
 
 export const mockGrammar = createGrammar({
     tokens: [
@@ -24,4 +25,25 @@ export const mockEnumeratedProductionRules: EnumeratedProductionRules = {
     "3": { nonTerminal: "T", productionRule: ["F"] },
     "4": { nonTerminal: "F", productionRule: ["(", "E", ")"] },
     "5": { nonTerminal: "F", productionRule: ["number"] },
+};
+
+export const mockProductionRuleInvertedIndex: ProductionRuleInvertedIndex = {
+    E: [
+        { nonTerminal: "E", productionRule: ["E", "+", "T"] },
+        { nonTerminal: "F", productionRule: ["(", "E", ")"] },
+    ],
+    T: [
+        { nonTerminal: "E", productionRule: ["E", "+", "T"] },
+        { nonTerminal: "E", productionRule: ["T"] },
+        { nonTerminal: "T", productionRule: ["T", "*", "F"] },
+    ],
+    F: [
+        { nonTerminal: "T", productionRule: ["T", "*", "F"] },
+        { nonTerminal: "T", productionRule: ["F"] },
+    ],
+    "(": [{ nonTerminal: "F", productionRule: ["(", "E", ")"] }],
+    ")": [{ nonTerminal: "F", productionRule: ["(", "E", ")"] }],
+    "*": [{ nonTerminal: "T", productionRule: ["T", "*", "F"] }],
+    "+": [{ nonTerminal: "E", productionRule: ["E", "+", "T"] }],
+    number: [{ nonTerminal: "F", productionRule: ["number"] }],
 };

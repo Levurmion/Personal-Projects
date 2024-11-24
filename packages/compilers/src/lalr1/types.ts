@@ -10,6 +10,11 @@ export interface Token {
     readonly regex: RegExp;
 }
 
+export interface ProductionRule {
+    nonTerminal: string;
+    productionRule: string[];
+}
+
 export type GrammarProductionRules<GTokenTypes extends string, GNonTerminalTypes extends string> = {
     [lhs in GNonTerminalTypes]: Array<Array<GTokenTypes | GNonTerminalTypes>>;
 };

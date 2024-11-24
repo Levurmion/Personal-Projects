@@ -1,19 +1,29 @@
 import { ReservedTokenTypes, type Grammar, type Token } from "../types";
+import { generateInvertedIndex } from "../utilities/generate-inverted-index";
 import type { ArrayElementType } from "../utility-types";
-import type { FirstAndFollowSet } from "./types";
+import type { FirstAndFollowSets, NonTerminalSymbolSets } from "./types";
 
 export const getFirstAndFollow = <
     GTokens extends readonly Token[],
     GNonTerminals extends readonly string[],
+    GTokenTypes extends string = ArrayElementType<GTokens>["type"],
+    GNonTerminalTypes extends string = ArrayElementType<GNonTerminals>,
 >(
     grammar: Grammar<GTokens, GNonTerminals>,
-): FirstAndFollowSet<ArrayElementType<GTokens>["type"], ArrayElementType<GNonTerminals>> => {
-    const { tokens, nonTerminals, productionRules } = grammar;
-    const terminalsSet = new Set(tokens.map((token) => token.type));
-    const nonTerminalsSet = new Set(nonTerminals);
+): FirstAndFollowSets<GTokenTypes, GNonTerminalTypes> => {
+    const { nonTerminals } = grammar;
+    const productionRuleIndex = generateInvertedIndex(grammar);
 
-    // add terminator to terminalsSet
-    terminalsSet.add(ReservedTokenTypes.TERMINATOR);
+    // initialize FIRST and FOLLOW sets
+    const firstSets = Object.fromEntries(
+        nonTerminals.map((nonTerminal) => [nonTerminal, new Set<string>()]),
+    ) as NonTerminalSymbolSets<GTokenTypes, GNonTerminalTypes>;
+    const followSets = Object.fromEntries(
+        nonTerminals.map((nonTerminal) => [nonTerminal, new Set<string>()]),
+    ) as NonTerminalSymbolSets<GTokenTypes, GNonTerminalTypes>;
 
-    return { first: {}, follow: {} };
+    return {
+        FIRST: firstSets,
+        FOLLOW: followSets,
+    };
 };
