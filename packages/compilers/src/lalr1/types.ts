@@ -12,7 +12,7 @@ export interface Token {
 
 export interface ProductionRule {
     nonTerminal: string;
-    productionRule: string[];
+    production: string[];
 }
 
 export type GrammarProductionRules<GTokenTypes extends string, GNonTerminalTypes extends string> = {
@@ -22,11 +22,10 @@ export type GrammarProductionRules<GTokenTypes extends string, GNonTerminalTypes
 export interface Grammar<
     GTokens extends readonly Token[],
     GNonTerminals extends readonly string[],
+    GTokenTypes extends string = ArrayElementType<GTokens>["type"],
+    GNonTerminalTypes extends string = ArrayElementType<GNonTerminals>,
 > {
     tokens: GTokens;
     nonTerminals: GNonTerminals;
-    nonTerminalProductions: GrammarProductionRules<
-        ArrayElementType<GTokens>["type"],
-        ArrayElementType<GNonTerminals>
-    >;
+    nonTerminalProductions: GrammarProductionRules<GTokenTypes, GNonTerminalTypes>;
 }

@@ -1,18 +1,35 @@
 import { describe, expect, test } from "vitest";
-import { mockEnumeratedProductionRules, mockGrammar } from "../tests/mocks";
+import { mockGrammar } from "../tests/mocks";
 import { Language } from ".";
 
 describe("Language Class Testing Suite", () => {
-    test("class instantiates with correct attributes", () => {
+    test("getRulesProducingSymbol retrieves the correct production rules", () => {
         const language = new Language(mockGrammar);
 
-        // production rules are correctly instantiated
-        for (const [id, productionRule] of Object.entries(language.productionRules)) {
-            const mockProductionRule = mockEnumeratedProductionRules[id as unknown as number];
-            expect(mockProductionRule.nonTerminal).toBe(productionRule.nonTerminal);
-            expect(mockProductionRule.productionRule).toEqual(productionRule.productionRule);
-        }
+        const productionRulesForE = language.getRulesProducingSymbol("E");
+        expect(productionRulesForE.length).toBe(2);
+        expect(productionRulesForE[0].nonTerminal).toBe("E");
+        expect(productionRulesForE[0].production).toEqual(["E", "+", "T"]);
+        expect(productionRulesForE[1].nonTerminal).toBe("F");
+        expect(productionRulesForE[1].production).toEqual(["(", "E", ")"]);
 
-        console.log((language as any).productionRuleInvertedIndex);
+        const productionRulesForNumber = language.getRulesProducingSymbol("number");
+        expect(productionRulesForNumber.length).toBe(1);
+        expect(productionRulesForNumber[0].nonTerminal).toBe("F");
+        expect(productionRulesForNumber[0].production).toEqual(["number"]);
+    });
+
+    test("getRulesOfNonTerminal retrieves the correct production rules for a non-terminal", () => {
+        const language = new Language(mockGrammar);
+
+        const productionRulesForE = language.getRulesOfNonTerminal("E");
+        expect(productionRulesForE.length).toBe(2);
+        expect(productionRulesForE[0].production).toEqual(["E", "+", "T"]);
+        expect(productionRulesForE[1].production).toEqual(["T"]);
+
+        const productionRulesForT = language.getRulesOfNonTerminal("T");
+        expect(productionRulesForT.length).toBe(2);
+        expect(productionRulesForT[0].production).toEqual(["T", "*", "F"]);
+        expect(productionRulesForT[1].production).toEqual(["F"]);
     });
 });
