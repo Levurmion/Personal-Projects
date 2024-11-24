@@ -1,3 +1,1 @@
-export interface CardProps {
-
-}
+export interface CardProps {}

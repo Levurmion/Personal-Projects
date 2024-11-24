@@ -1,0 +1,19 @@
+{
+    "name": "@repo/shared-utils",
+    "type": "module",
+    "scripts": {
+        "dev": "tsc --watch",
+        "build": "tsc"
+    },
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "typescript": "latest"
+    },
+    "dependencies": {
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^2.5.4"
+    }
+}
