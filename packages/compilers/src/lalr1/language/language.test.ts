@@ -7,11 +7,13 @@ describe("Language Class Testing Suite", () => {
         const language = new Language(mockGrammar);
 
         const productionRulesForE = language.getRulesProducingSymbol("E");
-        expect(productionRulesForE.length).toBe(2);
+        expect(productionRulesForE.length).toBe(3);
         expect(productionRulesForE[0].nonTerminal).toBe("E");
         expect(productionRulesForE[0].production).toEqual(["E", "+", "T"]);
-        expect(productionRulesForE[1].nonTerminal).toBe("F");
-        expect(productionRulesForE[1].production).toEqual(["(", "E", ")"]);
+        expect(productionRulesForE[1].nonTerminal).toBe("E");
+        expect(productionRulesForE[1].production).toEqual(["E", "-", "T"]);
+        expect(productionRulesForE[2].nonTerminal).toBe("F");
+        expect(productionRulesForE[2].production).toEqual(["(", "E", ")"]);
 
         const productionRulesForNumber = language.getRulesProducingSymbol("number");
         expect(productionRulesForNumber.length).toBe(1);
@@ -23,13 +25,15 @@ describe("Language Class Testing Suite", () => {
         const language = new Language(mockGrammar);
 
         const productionRulesForE = language.getRulesOfNonTerminal("E");
-        expect(productionRulesForE.length).toBe(2);
+        expect(productionRulesForE.length).toBe(3);
         expect(productionRulesForE[0].production).toEqual(["E", "+", "T"]);
-        expect(productionRulesForE[1].production).toEqual(["T"]);
+        expect(productionRulesForE[1].production).toEqual(["E", "-", "T"]);
+        expect(productionRulesForE[2].production).toEqual(["T"]);
 
         const productionRulesForT = language.getRulesOfNonTerminal("T");
-        expect(productionRulesForT.length).toBe(2);
+        expect(productionRulesForT.length).toBe(3);
         expect(productionRulesForT[0].production).toEqual(["T", "*", "F"]);
-        expect(productionRulesForT[1].production).toEqual(["F"]);
+        expect(productionRulesForT[1].production).toEqual(["T", "/", "F"]);
+        expect(productionRulesForT[2].production).toEqual(["F"]);
     });
 });
