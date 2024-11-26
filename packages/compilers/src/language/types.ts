@@ -1,5 +1,8 @@
 import type { ProductionRule } from "../types";
 
-export interface EnumeratedProductionRules {
-    [id: number]: ProductionRule;
+export interface EnumeratedProductionRules<
+    GTokenTypes extends string,
+    GNonTerminalTypes extends string,
+> {
+    [id: number]: ProductionRule<GTokenTypes, GNonTerminalTypes>;
 }

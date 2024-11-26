@@ -6,34 +6,26 @@ describe("Language Class Testing Suite", () => {
     test("getRulesProducingSymbol retrieves the correct production rules", () => {
         const language = new Language(mockGrammar);
 
-        const productionRulesForE = language.getRulesProducingSymbol("E");
-        expect(productionRulesForE.length).toBe(3);
-        expect(productionRulesForE[0].nonTerminal).toBe("E");
-        expect(productionRulesForE[0].production).toEqual(["E", "+", "T"]);
-        expect(productionRulesForE[1].nonTerminal).toBe("E");
-        expect(productionRulesForE[1].production).toEqual(["E", "-", "T"]);
-        expect(productionRulesForE[2].nonTerminal).toBe("F");
-        expect(productionRulesForE[2].production).toEqual(["(", "E", ")"]);
+        const productionRulesForARRAY = language.getRulesProducingSymbol("ARRAY");
+        expect(productionRulesForARRAY.length).toBe(1);
+        expect(productionRulesForARRAY[0].nonTerminal).toBe("VALUE");
+        expect(productionRulesForARRAY[0].production).toEqual(["ARRAY"]);
 
-        const productionRulesForNumber = language.getRulesProducingSymbol("number");
-        expect(productionRulesForNumber.length).toBe(1);
-        expect(productionRulesForNumber[0].nonTerminal).toBe("F");
-        expect(productionRulesForNumber[0].production).toEqual(["number"]);
+        const productionRulesForVALUE = language.getRulesProducingSymbol("VALUE");
+        expect(productionRulesForVALUE.length).toBe(3);
+        expect(productionRulesForVALUE[0].nonTerminal).toBe("ENTRY");
+        expect(productionRulesForVALUE[0].production).toEqual(["str_lit", ":", "VALUE"]);
+        expect(productionRulesForVALUE[1].nonTerminal).toBe("ELEMENTS?");
+        expect(productionRulesForVALUE[1].production).toEqual(["VALUE", "ELEMENT?"]);
+        expect(productionRulesForVALUE[2].nonTerminal).toBe("ELEMENT?");
+        expect(productionRulesForVALUE[2].production).toEqual([",", "VALUE", "ELEMENT?"]);
     });
 
     test("getRulesOfNonTerminal retrieves the correct production rules for a non-terminal", () => {
         const language = new Language(mockGrammar);
 
-        const productionRulesForE = language.getRulesOfNonTerminal("E");
-        expect(productionRulesForE.length).toBe(3);
-        expect(productionRulesForE[0].production).toEqual(["E", "+", "T"]);
-        expect(productionRulesForE[1].production).toEqual(["E", "-", "T"]);
-        expect(productionRulesForE[2].production).toEqual(["T"]);
-
-        const productionRulesForT = language.getRulesOfNonTerminal("T");
-        expect(productionRulesForT.length).toBe(3);
-        expect(productionRulesForT[0].production).toEqual(["T", "*", "F"]);
-        expect(productionRulesForT[1].production).toEqual(["T", "/", "F"]);
-        expect(productionRulesForT[2].production).toEqual(["F"]);
+        const productionRulesForARRAY = language.getRulesOfNonTerminal("ARRAY");
+        expect(productionRulesForARRAY.length).toBe(1);
+        expect(productionRulesForARRAY[0].production).toEqual(["[", "ELEMENTS?", "]"]);
     });
 });

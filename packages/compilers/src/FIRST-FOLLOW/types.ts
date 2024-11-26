@@ -1,13 +1,18 @@
+import type { ReservedTokenTypes } from "..";
 import type { Grammar, Token } from "../types";
 import type { ArrayElementType } from "../utility-types";
 
-export type NonTerminalSymbolSets<GTokenTypes extends string, GNonTerminalTypes extends string> = {
+export type FIRSTSets<GTokenTypes extends string, GNonTerminalTypes extends string> = {
     [NonTerminal in GNonTerminalTypes]: Set<GTokenTypes>;
 };
 
+export type FOLLOWSets<GTokenTypes extends string, GNonTerminalTypes extends string> = {
+    [NonTerminal in GNonTerminalTypes]: Set<GTokenTypes | ReservedTokenTypes.TERMINATOR>;
+};
+
 export interface FirstAndFollowSets<GTokenTypes extends string, GNonTerminalTypes extends string> {
-    FIRST: NonTerminalSymbolSets<GTokenTypes, GNonTerminalTypes>;
-    FOLLOW: NonTerminalSymbolSets<GTokenTypes, GNonTerminalTypes>;
+    FIRST: FIRSTSets<GTokenTypes, GNonTerminalTypes>;
+    FOLLOW: FOLLOWSets<GTokenTypes, GNonTerminalTypes>;
 }
 
 export type GetFirstAndFollow = <
