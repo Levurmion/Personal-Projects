@@ -17,7 +17,8 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "target": "ES2015"
   },
   "exclude": ["node_modules"]
 }

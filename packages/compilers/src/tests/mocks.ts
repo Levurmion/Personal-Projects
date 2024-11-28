@@ -36,3 +36,14 @@ export const mockGrammar = createGrammar({
         "ELEMENT?": [[",", "VALUE", "ELEMENT?"], [EPSILON]],
     },
 });
+
+export const cyclicGrammar = createGrammar({
+    tokens: [{ type: "dummy", regex: /./ }] as const,
+    nonTerminals: ["A", "B", "C"] as const,
+    startSymbol: "A",
+    nonTerminalProductions: {
+        A: [["B", "dummy"]],
+        B: [["C"]],
+        C: [["A"]],
+    },
+});

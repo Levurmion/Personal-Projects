@@ -1,8 +1,8 @@
-import { some } from "lodash";
-import { ReservedTokenTypes, TERMINATOR } from "..";
-import type { Language } from "../language";
+import { EPSILON, ReservedTokenTypes, TERMINATOR } from "..";
+import type { Language } from "../language/language";
 import type { Token } from "../types";
 import type { ArrayElementType } from "../utility-types";
+import { SetUtilities } from "@repo/shared-utils";
 
 export const getFOLLOW = <
     GTokens extends readonly Token[],
@@ -13,9 +13,8 @@ export const getFOLLOW = <
     firstSets: Record<string, Set<string>>,
 ) => {
     const followSets: Record<string, Set<string>> = {};
-    const setsComplete = new Array<boolean>(language.nonTerminalsSet.size).fill(false);
 
-    // initialize empty sets for each non-terminal
+    // initialize empty sets for each non-terminal, start symbol gets initialized with TERMINATOR
     language.nonTerminalsSet.forEach(
         (nonTerminal) =>
             (followSets[nonTerminal] =
@@ -24,8 +23,8 @@ export const getFOLLOW = <
                     : new Set<string>()),
     );
 
-    while (some(setsComplete, (val) => val === false)) {
-        let idx = 0;
+    let changed = true;
+    while (changed) {
         for (const nonTerminal of language.nonTerminalsSet) {
             const currFollowSet = followSets[nonTerminal];
             const productionsProducingNonTerminal = language
@@ -39,25 +38,28 @@ export const getFOLLOW = <
                 const nonTerminalIdx = productionRule.findIndex((symbol) => symbol === nonTerminal);
 
                 if (nonTerminalIdx === productionRule.length - 1) {
-                    newFollowSet = new Set([...newFollowSet, ...followSets[rule.nonTerminal]]);
+                    newFollowSet = SetUtilities.union(newFollowSet, followSets[rule.nonTerminal]);
                     continue;
                 }
 
                 const nextSymbolIdx = nonTerminalIdx + 1;
                 const nextSymbol = productionRule[nextSymbolIdx];
-                newFollowSet = new Set([...newFollowSet, ...firstSets[nextSymbol]]);
+                const nextSymbolFirstSet = firstSets[nextSymbol];
+
+                // exclude EPSILON from FOLLOW set
+                nextSymbolFirstSet.delete(EPSILON);
+                newFollowSet = SetUtilities.union(newFollowSet, nextSymbolFirstSet);
 
                 if (
                     language.nonTerminalsSet.has(nextSymbol) &&
-                    language.nonTerminalHasEpsilonProduction(nextSymbol as GNonTerminalTypes)
+                    language.hasEpsilonProduction(nextSymbol as GNonTerminalTypes)
                 ) {
-                    newFollowSet = new Set([...newFollowSet, ...followSets[rule.nonTerminal]]);
+                    newFollowSet = SetUtilities.union(newFollowSet, followSets[rule.nonTerminal]);
                 }
             }
 
             followSets[nonTerminal] = newFollowSet;
-            setsComplete[idx] = newFollowSet.size === currFollowSet.size;
-            idx++;
+            changed = newFollowSet.size !== currFollowSet.size;
         }
     }
 

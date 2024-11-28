@@ -1,4 +1,4 @@
-import type { Language } from "../language";
+import type { Language } from "../language/language";
 import type { Token } from "../types";
 import { getFIRST } from "./FIRST";
 import { getFOLLOW } from "./FOLLOW";

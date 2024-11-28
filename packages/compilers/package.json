@@ -11,6 +11,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@repo/shared-utils": "*",
     "lodash": "^4.17.21"
   }
 }

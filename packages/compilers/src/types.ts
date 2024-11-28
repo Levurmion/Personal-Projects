@@ -1,4 +1,3 @@
-import type { ReservedTokenTypes } from ".";
 import type { ArrayElementType } from "./utility-types";
 
 export interface Token {
@@ -6,7 +5,17 @@ export interface Token {
     readonly regex: RegExp;
 }
 
-export interface ProductionRule<GTokenTypes extends string, GNonTerminalTypes extends string> {
+export enum ReservedTokenTypes {
+    TERMINATOR = "$",
+    EPSILON = "ε",
+    DOT = "•",
+    AUGMENTED_START = "G'",
+}
+
+export interface ProductionRule<
+    GTokenTypes extends string = string,
+    GNonTerminalTypes extends string = string,
+> {
     nonTerminal: GNonTerminalTypes;
     production: (GNonTerminalTypes | GTokenTypes)[];
 }
@@ -29,3 +38,15 @@ export interface Grammar<
         GNonTerminalTypes
     >;
 }
+
+export interface AugmentedGrammar<
+    GTokens extends Readonly<Token[]>,
+    GNonTerminals extends Readonly<string[]>,
+    GTokenTypes extends string = ArrayElementType<GTokens>["type"],
+    GNonTerminalTypes extends string = ArrayElementType<GNonTerminals>,
+> extends Grammar<
+        GTokens,
+        GNonTerminals,
+        GTokenTypes,
+        GNonTerminalTypes | ReservedTokenTypes.AUGMENTED_START
+    > {}

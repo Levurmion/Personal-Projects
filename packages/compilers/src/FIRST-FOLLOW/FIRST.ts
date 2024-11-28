@@ -1,5 +1,5 @@
-import { some } from "lodash";
-import type { Language } from "../language";
+import { SetUtilities } from "@repo/shared-utils";
+import type { Language } from "../language/language";
 import type { Token } from "../types";
 import type { ArrayElementType } from "../utility-types";
 import { EPSILON } from "..";
@@ -12,40 +12,45 @@ export const getFIRST = <
     language: Language<GTokens, GNonTerminals>,
 ) => {
     const firstSets: Record<string, Set<string>> = {};
-    const setsComplete = new Array<boolean>(language.nonTerminalsSet.size).fill(false);
 
-    // initialize empty sets for each non-terminal
+    // initialize empty sets for non-terminals
     language.nonTerminalsSet.forEach((nonTerminal) => (firstSets[nonTerminal] = new Set<string>()));
     language.terminalsSet.forEach(
         (terminal) => (firstSets[terminal] = new Set<string>([terminal])),
     );
 
-    while (some(setsComplete, (val) => val === false)) {
-        let idx = 0;
+    let changed = true;
+    while (changed) {
+        changed = false;
         for (const nonTerminal of language.nonTerminalsSet) {
             const currFirstSet = firstSets[nonTerminal];
             const productionRules = language.getRulesOfNonTerminal(
                 nonTerminal as GNonTerminalTypes,
             );
             let newFirstSet = new Set(currFirstSet);
+
+            // for each production rule of the non-terminal
             for (const rule of productionRules) {
                 for (const symbol of rule.production) {
-                    if (language.terminalsSet.has(symbol) || symbol === EPSILON) {
-                        // symbol is a terminal
-                        symbol !== EPSILON && newFirstSet.add(symbol);
+                    if (symbol === EPSILON) {
+                        newFirstSet.add(EPSILON);
                         break;
+                    } else if (language.terminalsSet.has(symbol)) {
+                        newFirstSet.add(symbol);
+                        break;
+                    } else {
+                        // symbol is a non-terminal
+                        newFirstSet = SetUtilities.union(newFirstSet, firstSets[symbol]);
                     }
-                    // symbol is a non-terminal
-                    newFirstSet = new Set([...newFirstSet, ...firstSets[symbol]]);
-                    if (!language.nonTerminalHasEpsilonProduction(symbol as GNonTerminalTypes)) {
+
+                    if (!language.hasEpsilonProduction(symbol as GNonTerminalTypes)) {
                         break;
                     }
                 }
             }
 
             firstSets[nonTerminal] = newFirstSet;
-            setsComplete[idx] = newFirstSet.size === currFirstSet.size;
-            idx++;
+            changed = newFirstSet.size !== currFirstSet.size;
         }
     }
 

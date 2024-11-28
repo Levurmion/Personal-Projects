@@ -1,18 +1,19 @@
 import { describe, expect, test } from "vitest";
-import { Language } from "../language";
-import { mockGrammar } from "../tests/mocks";
+import { Language } from "../language/language";
+import { cyclicGrammar, mockGrammar } from "../tests/mocks";
 import { getFIRST } from "./FIRST";
 import { getFOLLOW } from "./FOLLOW";
+import { EPSILON } from "..";
 
 const expectedFirstSets: Record<string, string[]> = {
     VALUE: ["true", "false", "null", "str_lit", "num_lit", "{", "["],
     OBJECT: ["{"],
     ARRAY: ["["],
-    "ENTRIES?": ["str_lit"],
+    "ENTRIES?": ["str_lit", EPSILON],
     ENTRY: ["str_lit"],
-    "ENTRY?": [","],
-    "ELEMENTS?": ["true", "false", "null", "str_lit", "num_lit", "{", "["],
-    "ELEMENT?": [","],
+    "ENTRY?": [",", EPSILON],
+    "ELEMENTS?": ["true", "false", "null", "str_lit", "num_lit", "{", "[", EPSILON],
+    "ELEMENT?": [",", EPSILON],
     "{": ["{"],
     "}": ["}"],
     "[": ["["],

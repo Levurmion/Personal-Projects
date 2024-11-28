@@ -9,6 +9,10 @@ export class LR0ClosureSet implements Iterable<LR0Item> {
         this.closureSetItems = [];
     }
 
+    public size(): number {
+        return this.closureSet.size;
+    }
+
     public add(item: LR0Item): void {
         const itemName = item.getName();
         if (!this.closureSet.has(itemName)) {
@@ -36,6 +40,19 @@ export class LR0ClosureSet implements Iterable<LR0Item> {
             unionClosureSet.add(item);
         }
         return unionClosureSet;
+    }
+
+    public isEqual(otherClosureSet: LR0ClosureSet): boolean {
+        if (this.size() !== otherClosureSet.size()) {
+            return false;
+        } else {
+            for (const item of otherClosureSet) {
+                if (!this.has(item)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

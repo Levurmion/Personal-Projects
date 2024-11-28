@@ -10,6 +10,8 @@ const automaton = new LR0Automaton(augmentedLanguage);
 
 const startItem = new LR0Item(augmentedLanguage.getRulesOfNonTerminal(AUGMENTED_START)[0]);
 const closureSet = automaton.CLOSURE(startItem);
+const gotoSet = automaton.GOTO(closureSet, "}");
 
 console.log(closureSet);
 console.log(closureSet.gotoSymbols());
+console.log(gotoSet);
