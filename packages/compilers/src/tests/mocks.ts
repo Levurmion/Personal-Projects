@@ -1,6 +1,23 @@
 import { createGrammar, EPSILON } from "../";
 
-export const mockGrammar = createGrammar({
+export const arithmeticGrammar = createGrammar({
+    tokens: [
+        { type: "id", regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/ },
+        { type: "+", regex: /\+/ },
+        { type: "*", regex: /\*/ },
+        { type: "(", regex: /\(/ },
+        { type: ")", regex: /\)/ },
+    ] as const,
+    nonTerminals: ["E", "T", "F"] as const,
+    startSymbol: "E",
+    nonTerminalProductions: {
+        E: [["E", "+", "T"], ["T"]],
+        T: [["T", "*", "F"], ["F"]],
+        F: [["(", "E", ")"], ["id"]],
+    },
+});
+
+export const jsonGrammar = createGrammar({
     tokens: [
         { type: "str_lit", regex: /"(.*)"/ },
         { type: "num_lit", regex: /-?\d+(\.\d+)?/ },

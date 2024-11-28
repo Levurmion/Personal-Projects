@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { mockGrammar } from "../tests/mocks";
+import { jsonGrammar } from "../tests/mocks";
 import { Language } from ".";
 
 describe("Language Class Testing Suite", () => {
     test("getRulesProducingSymbol retrieves the correct production rules", () => {
-        const language = new Language(mockGrammar);
+        const language = new Language(jsonGrammar);
 
         const productionRulesForARRAY = language.getRulesProducingSymbol("ARRAY");
         expect(productionRulesForARRAY.length).toBe(1);
@@ -22,7 +22,7 @@ describe("Language Class Testing Suite", () => {
     });
 
     test("getRulesOfNonTerminal retrieves the correct production rules for a non-terminal", () => {
-        const language = new Language(mockGrammar);
+        const language = new Language(jsonGrammar);
 
         const productionRulesForARRAY = language.getRulesOfNonTerminal("ARRAY");
         expect(productionRulesForARRAY.length).toBe(1);

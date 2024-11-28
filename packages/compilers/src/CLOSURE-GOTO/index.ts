@@ -1,7 +1,7 @@
 import { augmentGrammar } from "..";
 import { Language } from "../language";
-import { mockGrammar } from "../tests/mocks";
+import { jsonGrammar } from "../tests/mocks";
 
-const augmentedGrammar = augmentGrammar(mockGrammar);
+const augmentedGrammar = augmentGrammar(jsonGrammar);
 const augmentedLanguage = new Language(augmentedGrammar);
 console.log(augmentedLanguage);

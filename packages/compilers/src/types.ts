@@ -50,3 +50,18 @@ export interface AugmentedGrammar<
         GTokenTypes,
         GNonTerminalTypes | ReservedTokenTypes.AUGMENTED_START
     > {}
+
+export type ShiftReduceParserActions =
+    | {
+          action: "shift";
+          symbol: string;
+          nextState: number;
+      }
+    | {
+          action: "reduce";
+          productionRule: ProductionRule;
+      }
+    | {
+          action: "goto";
+          nextState: number;
+      };

@@ -1,7 +1,7 @@
 import { DOT } from "..";
 import type { ProductionRule } from "../types";
 
-export class LR0Item {
+export class SLRItem {
     public readonly nonTerminal: string;
     public readonly originalProduction: string[];
     public readonly RHS: string[];
@@ -29,11 +29,11 @@ export class LR0Item {
         return this.dotIdx < this.RHS.length - 1 ? this.RHS[this.dotIdx + 1] : null;
     }
 
-    public shiftDotRight(): LR0Item | null {
+    public shiftDotRight(): SLRItem | null {
         if (this.dotIdx === this.RHS.length - 1) {
             return null;
         } else {
-            return new LR0Item(this.productionRule, this.dotIdx + 1);
+            return new SLRItem(this.productionRule, this.dotIdx + 1);
         }
     }
 }

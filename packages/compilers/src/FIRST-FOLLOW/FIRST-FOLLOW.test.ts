@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { Language } from "../language/language";
-import { cyclicGrammar, mockGrammar } from "../tests/mocks";
+import { cyclicGrammar, jsonGrammar } from "../tests/mocks";
 import { getFIRST } from "./FIRST";
 import { getFOLLOW } from "./FOLLOW";
 import { EPSILON } from "..";
@@ -40,7 +40,7 @@ const expectedFollowSets: Record<string, string[]> = {
 
 describe("FIRST and FOLLOW Testing Suite", () => {
     test("getFIRST function computes the correct FIRST sets", () => {
-        const language = new Language(mockGrammar);
+        const language = new Language(jsonGrammar);
         const firstSets = getFIRST(language);
 
         for (const [symbol, firstSet] of Object.entries(firstSets)) {
@@ -49,7 +49,7 @@ describe("FIRST and FOLLOW Testing Suite", () => {
     });
 
     test("getFOLLOW function computes the correct FOLLOW sets", () => {
-        const language = new Language(mockGrammar);
+        const language = new Language(jsonGrammar);
         const firstSets = getFIRST(language);
         const followSets = getFOLLOW(language, firstSets);
 
