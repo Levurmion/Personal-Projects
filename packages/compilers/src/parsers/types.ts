@@ -51,6 +51,11 @@ export interface AugmentedGrammar<
         GNonTerminalTypes | ReservedTokenTypes.AUGMENTED_START
     > {}
 
+export enum ShiftReduceParserConflict {
+    SHIFT_REDUCE = "shift/reduce",
+    REDUCE_REDUCE = "reduce/reduce",
+}
+
 export type ShiftReduceParserActions =
     | {
           action: "shift";
@@ -64,4 +69,16 @@ export type ShiftReduceParserActions =
     | {
           action: "goto";
           nextState: number;
+      }
+    | {
+          action: "accept";
+      }
+    | {
+          action: "conflict";
+          type: ShiftReduceParserConflict;
+          possibleActions: ShiftReduceParserActions[];
+      }
+    | {
+          action: "error";
+          reason?: string;
       };

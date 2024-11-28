@@ -19,9 +19,9 @@ export const getFIRST = <
         (terminal) => (firstSets[terminal] = new Set<string>([terminal])),
     );
 
-    let changed = true;
-    while (changed) {
-        changed = false;
+    let unchanged = true;
+    while (unchanged) {
+        unchanged = false;
         for (const nonTerminal of language.nonTerminalsSet) {
             const currFirstSet = firstSets[nonTerminal];
             const productionRules = language.getRulesOfNonTerminal(
@@ -40,7 +40,7 @@ export const getFIRST = <
                         break;
                     } else {
                         // symbol is a non-terminal
-                        newFirstSet = SetUtilities.union(newFirstSet, firstSets[symbol]);
+                        newFirstSet = SetUtilities.union([newFirstSet, firstSets[symbol]]);
                     }
 
                     if (!language.hasEpsilonProduction(symbol as GNonTerminalTypes)) {
@@ -50,7 +50,7 @@ export const getFIRST = <
             }
 
             firstSets[nonTerminal] = newFirstSet;
-            changed = newFirstSet.size !== currFirstSet.size;
+            unchanged = unchanged || newFirstSet.size !== currFirstSet.size;
         }
     }
 

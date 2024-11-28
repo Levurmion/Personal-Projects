@@ -1,5 +1,5 @@
 export class SetUtilities {
-    static union = <T>(...sets: Set<T>[]) => {
+    static union = <T, S extends Set<T>>(sets: S[]) => {
         const unionSet = new Set<T>();
         sets.forEach((set) => {
             for (const item of set) {

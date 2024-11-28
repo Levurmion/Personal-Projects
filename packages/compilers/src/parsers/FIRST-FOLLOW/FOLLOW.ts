@@ -1,6 +1,6 @@
-import { EPSILON, ReservedTokenTypes, TERMINATOR } from "..";
+import { EPSILON, TERMINATOR } from "..";
 import type { Language } from "../language/language";
-import type { Token } from "../types";
+import type { ReservedTokenTypes, Token } from "../types";
 import type { ArrayElementType } from "../utility-types";
 import { SetUtilities } from "@repo/shared-utils";
 
@@ -23,13 +23,12 @@ export const getFOLLOW = <
                     : new Set<string>()),
     );
 
-    let changed = true;
-    while (changed) {
+    let unchanged = true;
+    while (unchanged) {
+        unchanged = false;
         for (const nonTerminal of language.nonTerminalsSet) {
             const currFollowSet = followSets[nonTerminal];
-            const productionsProducingNonTerminal = language
-                .getRulesProducingSymbol(nonTerminal)
-                .filter((production) => production.nonTerminal !== nonTerminal);
+            const productionsProducingNonTerminal = language.getRulesProducingSymbol(nonTerminal);
 
             let newFollowSet = new Set(currFollowSet);
 
@@ -38,7 +37,7 @@ export const getFOLLOW = <
                 const nonTerminalIdx = productionRule.findIndex((symbol) => symbol === nonTerminal);
 
                 if (nonTerminalIdx === productionRule.length - 1) {
-                    newFollowSet = SetUtilities.union(newFollowSet, followSets[rule.nonTerminal]);
+                    newFollowSet = SetUtilities.union([newFollowSet, followSets[rule.nonTerminal]]);
                     continue;
                 }
 
@@ -48,18 +47,18 @@ export const getFOLLOW = <
 
                 // exclude EPSILON from FOLLOW set
                 nextSymbolFirstSet.delete(EPSILON);
-                newFollowSet = SetUtilities.union(newFollowSet, nextSymbolFirstSet);
+                newFollowSet = SetUtilities.union([newFollowSet, nextSymbolFirstSet]);
 
                 if (
-                    language.nonTerminalsSet.has(nextSymbol) &&
+                    language.nonTerminalsSet.has(nextSymbol as GNonTerminalTypes) &&
                     language.hasEpsilonProduction(nextSymbol as GNonTerminalTypes)
                 ) {
-                    newFollowSet = SetUtilities.union(newFollowSet, followSets[rule.nonTerminal]);
+                    newFollowSet = SetUtilities.union([newFollowSet, followSets[rule.nonTerminal]]);
                 }
             }
 
             followSets[nonTerminal] = newFollowSet;
-            changed = newFollowSet.size !== currFollowSet.size;
+            unchanged = unchanged || newFollowSet.size !== currFollowSet.size;
         }
     }
 

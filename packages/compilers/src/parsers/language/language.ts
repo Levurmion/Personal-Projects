@@ -1,28 +1,34 @@
 import { some } from "lodash";
-import type {
-    AugmentedGrammar,
-    Grammar,
-    ProductionRule,
+import {
     ReservedTokenTypes,
-    Token,
+    type AugmentedGrammar,
+    type Grammar,
+    type ProductionRule,
+    type Token,
 } from "../types";
 import type { ArrayElementType } from "../utility-types";
 import type { EnumeratedProductionRules } from "./types";
-import { EPSILON } from "..";
+import { EPSILON, TERMINATOR } from "..";
+import { SetUtilities } from "@repo/shared-utils";
 
 export class Language<
     GTokens extends readonly Token[] = Token[],
     GNonTerminals extends readonly string[] = string[],
-    GTokenTypes extends ArrayElementType<GTokens>["type"] | ReservedTokenTypes.EPSILON =
+    GTokenTypes extends
         | ArrayElementType<GTokens>["type"]
-        | ReservedTokenTypes.EPSILON,
+        | ReservedTokenTypes.EPSILON
+        | ReservedTokenTypes.TERMINATOR =
+        | ArrayElementType<GTokens>["type"]
+        | ReservedTokenTypes.EPSILON
+        | ReservedTokenTypes.TERMINATOR,
     GNonTerminalTypes extends ArrayElementType<GNonTerminals> = ArrayElementType<GNonTerminals>,
     GSymbols extends GTokenTypes | GNonTerminalTypes = GTokenTypes | GNonTerminalTypes,
 > {
     // attributes
     public readonly productionRules: EnumeratedProductionRules<GTokenTypes, GNonTerminalTypes>;
-    public readonly terminalsSet: Set<string>;
-    public readonly nonTerminalsSet: Set<string>;
+    public readonly terminalsSet: Set<GTokenTypes>;
+    public readonly nonTerminalsSet: Set<GNonTerminalTypes>;
+    public readonly symbolsSet: Set<GTokenTypes | GNonTerminalTypes>;
     public readonly grammar:
         | Grammar<GTokens, GNonTerminals>
         | AugmentedGrammar<GTokens, GNonTerminals>;
@@ -37,8 +43,12 @@ export class Language<
         this.productionRules = this.enumerateProductionRules();
         this.productionRuleIndex = this.generateIndex();
         this.productionRuleInvertedIndex = this.generateInvertedIndex();
-        this.terminalsSet = new Set(grammar.tokens.map((token) => token.type as GTokenTypes));
+        this.terminalsSet = new Set([
+            ...grammar.tokens.map((token) => token.type),
+            TERMINATOR,
+        ] as GTokenTypes[]);
         this.nonTerminalsSet = new Set(grammar.nonTerminals) as Set<GNonTerminalTypes>;
+        this.symbolsSet = SetUtilities.union([this.terminalsSet, this.nonTerminalsSet]);
     }
 
     /**

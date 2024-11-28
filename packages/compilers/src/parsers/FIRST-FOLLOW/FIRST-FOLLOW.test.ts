@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { Language } from "../language/language";
-import { cyclicGrammar, jsonGrammar } from "../tests/mocks";
+import { arithmeticGrammar, cyclicGrammar, jsonGrammar } from "../tests/mocks";
 import { getFIRST } from "./FIRST";
 import { getFOLLOW } from "./FOLLOW";
 import { EPSILON } from "..";
@@ -25,6 +25,7 @@ const expectedFirstSets: Record<string, string[]> = {
     null: ["null"],
     true: ["true"],
     false: ["false"],
+    $: ["$"],
 };
 
 const expectedFollowSets: Record<string, string[]> = {
@@ -56,5 +57,14 @@ describe("FIRST and FOLLOW Testing Suite", () => {
         for (const [nonTerminal, followSet] of Object.entries(followSets)) {
             expect(Array.from(followSet).sort()).toEqual(expectedFollowSets[nonTerminal].sort());
         }
+    });
+
+    test("", () => {
+        const language = new Language(arithmeticGrammar);
+        const firstSets = getFIRST(language);
+        const followSets = getFOLLOW(language, firstSets);
+
+        console.log(firstSets);
+        console.log(followSets);
     });
 });

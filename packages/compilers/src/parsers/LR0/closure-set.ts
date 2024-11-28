@@ -1,11 +1,11 @@
-import type { SLRItem } from "./item";
+import type { LR0Item } from "./item";
 import * as CryptoJS from "crypto-js";
 
-export class SLRClosureSet implements Iterable<SLRItem> {
+export class LR0ClosureSet implements Iterable<LR0Item> {
     private closureSet: Set<string>;
-    private closureSetItems: SLRItem[];
+    private closureSetItems: LR0Item[];
 
-    constructor(items: Iterable<SLRItem> = []) {
+    constructor(items: Iterable<LR0Item> = []) {
         this.closureSet = new Set<string>();
         this.closureSetItems = [];
 
@@ -22,7 +22,7 @@ export class SLRClosureSet implements Iterable<SLRItem> {
         return this.closureSet.size;
     }
 
-    public add(item: SLRItem): void {
+    public add(item: LR0Item): void {
         const itemName = item.getName();
         if (!this.closureSet.has(itemName)) {
             this.closureSet.add(itemName);
@@ -30,18 +30,18 @@ export class SLRClosureSet implements Iterable<SLRItem> {
         }
     }
 
-    public delete(item: SLRItem): void {
+    public delete(item: LR0Item): void {
         const itemName = item.getName();
         this.closureSet.delete(itemName);
         this.closureSetItems = this.closureSetItems.filter((item) => item.getName() !== itemName);
     }
 
-    public has(item: SLRItem): boolean {
+    public has(item: LR0Item): boolean {
         return this.closureSet.has(item.getName());
     }
 
-    public union(otherClosureSet: SLRClosureSet): SLRClosureSet {
-        const unionClosureSet = new SLRClosureSet();
+    public union(otherClosureSet: LR0ClosureSet): LR0ClosureSet {
+        const unionClosureSet = new LR0ClosureSet();
         for (const item of otherClosureSet) {
             unionClosureSet.add(item);
         }
@@ -52,9 +52,9 @@ export class SLRClosureSet implements Iterable<SLRItem> {
     }
 
     /**
-     * Checks whether `otherClosureSet` is equal to this `SLRClosureSet`.
+     * Checks whether `otherClosureSet` is equal to this `LR0ClosureSet`.
      */
-    public isEqual(otherClosureSet: SLRClosureSet): boolean {
+    public isEqual(otherClosureSet: LR0ClosureSet): boolean {
         if (this.size() !== otherClosureSet.size()) {
             return false;
         } else {
@@ -68,13 +68,13 @@ export class SLRClosureSet implements Iterable<SLRItem> {
     }
 
     /**
-     * Checks whether `otherClosureSet` is a subset of this `SLRClosureSet`. `otherClosureSet`
+     * Checks whether `otherClosureSet` is a subset of this `LR0ClosureSet`. `otherClosureSet`
      * is a subset if:
      *
      * - `otherClosureSet.size() <= this.size()`
-     * - all items in `otherClosureSet` are in this `SLRClosureSet`
+     * - all items in `otherClosureSet` are in this `LR0ClosureSet`
      */
-    public isSubset(otherClosureSet: SLRClosureSet): boolean {
+    public isSubset(otherClosureSet: LR0ClosureSet): boolean {
         if (this.size() < otherClosureSet.size()) {
             return false;
         } else {
@@ -88,7 +88,7 @@ export class SLRClosureSet implements Iterable<SLRItem> {
     }
 
     /**
-     * Obtain a set of all possible symbols that this `SLRClosureSet` can go to. These are symbols
+     * Obtain a set of all possible symbols that this `LR0ClosureSet` can go to. These are symbols
      * immediately adjacent of the `DOT`.
      */
     public gotoSymbols(): Set<string> {
@@ -99,7 +99,7 @@ export class SLRClosureSet implements Iterable<SLRItem> {
     }
 
     /**
-     * Obtain a signature ID of this `SLRClosureSet`. If two sets are equal, they will have the same
+     * Obtain a signature ID of this `LR0ClosureSet`. If two sets are equal, they will have the same
      * signature.
      */
     public getSignature(): string {
@@ -108,13 +108,21 @@ export class SLRClosureSet implements Iterable<SLRItem> {
         return CryptoJS.MD5(itemNames.join()).toString(CryptoJS.enc.Hex);
     }
 
+    /**
+     * Retrieve all `LR0Items` where the production rule is completed. These are items where the dot
+     * `•` is at the end of all symbols in the RHS of the grammar expression.
+     */
+    public getCompletedItems(): LR0Item[] {
+        return this.closureSetItems.filter((item) => item.shiftDotRight() === null);
+    }
+
     // iterator method
-    public [Symbol.iterator](): Iterator<SLRItem> {
+    public [Symbol.iterator](): Iterator<LR0Item> {
         let idx = 0;
         const items = this.closureSetItems;
 
         return {
-            next(): IteratorResult<SLRItem> {
+            next(): IteratorResult<LR0Item> {
                 if (idx < items.length) {
                     return { value: items[idx++], done: false };
                 } else {

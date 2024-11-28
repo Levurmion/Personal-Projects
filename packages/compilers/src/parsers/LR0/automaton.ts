@@ -9,17 +9,29 @@ import type { LR0GotoSet, LR0DFAState } from "./types";
 export class LR0Automaton<
     GTokens extends readonly Token[] = Token[],
     GNonTerminals extends readonly string[] = string[],
-    GTokenTypes extends ArrayElementType<GTokens>["type"] | ReservedTokenTypes.EPSILON =
+    GTokenTypes extends
         | ArrayElementType<GTokens>["type"]
-        | ReservedTokenTypes.EPSILON,
+        | ReservedTokenTypes.EPSILON
+        | ReservedTokenTypes.TERMINATOR =
+        | ArrayElementType<GTokens>["type"]
+        | ReservedTokenTypes.EPSILON
+        | ReservedTokenTypes.TERMINATOR,
     GNonTerminalTypes extends ArrayElementType<GNonTerminals> = ArrayElementType<GNonTerminals>,
     GSymbols extends GTokenTypes | GNonTerminalTypes = GTokenTypes | GNonTerminalTypes,
 > {
-    public readonly language: Language<GTokens, GNonTerminals>;
+    public readonly language: Language<
+        GTokens,
+        GNonTerminals,
+        GTokenTypes,
+        GNonTerminalTypes,
+        GSymbols
+    >;
     public readonly DFAStates: Map<number, LR0DFAState>;
     private coreItemsIndex: Map<string, number>;
 
-    constructor(language: Language<GTokens, GNonTerminals>) {
+    constructor(
+        language: Language<GTokens, GNonTerminals, GTokenTypes, GNonTerminalTypes, GSymbols>,
+    ) {
         // ensure that this is an augmented language
         if (language.grammar.startSymbol !== AUGMENTED_START) {
             throw new Error(`Cannot construct an LR0ItemSet without an augmented grammar.`);
@@ -46,7 +58,7 @@ export class LR0Automaton<
             if (
                 adjSymbol === null ||
                 adjSymbol === EPSILON ||
-                this.language.terminalsSet.has(adjSymbol)
+                this.language.terminalsSet.has(adjSymbol as GTokenTypes)
             ) {
                 continue;
             } else {
