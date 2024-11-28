@@ -2,11 +2,11 @@ import { AUGMENTED_START, EPSILON } from "..";
 import type { Language } from "../language";
 import type { ReservedTokenTypes, ShiftReduceParserActions, Token } from "../types";
 import type { ArrayElementType } from "../utility-types";
-import { LR0ClosureSet } from "./closure-set";
-import { LR0Item } from "./item";
-import type { LR0GotoSet, LR0DFAState } from "./types";
+import { ClosureSet } from "./closure-set";
+import { Item } from "./item";
+import type { GotoSet, DFAState } from "./types";
 
-export class LR0Automaton<
+export class Automaton<
     GTokens extends readonly Token[] = Token[],
     GNonTerminals extends readonly string[] = string[],
     GTokenTypes extends
@@ -26,7 +26,7 @@ export class LR0Automaton<
         GNonTerminalTypes,
         GSymbols
     >;
-    public readonly DFAStates: Map<number, LR0DFAState>;
+    public readonly DFAStates: Map<number, DFAState>;
     private coreItemsIndex: Map<string, number>;
 
     constructor(
@@ -34,7 +34,7 @@ export class LR0Automaton<
     ) {
         // ensure that this is an augmented language
         if (language.grammar.startSymbol !== AUGMENTED_START) {
-            throw new Error(`Cannot construct an LR0ItemSet without an augmented grammar.`);
+            throw new Error(`Cannot construct an ItemSet without an augmented grammar.`);
         }
 
         this.language = language;
@@ -44,13 +44,13 @@ export class LR0Automaton<
         this.buildDFA();
     }
 
-    public CLOSURE(item: LR0Item): LR0ClosureSet {
-        const closureSet = new LR0ClosureSet();
+    public CLOSURE(item: Item): ClosureSet {
+        const closureSet = new ClosureSet();
 
         const queue = [item];
         while (queue.length > 0) {
             // proccess the currItem
-            const currItem = queue.pop() as LR0Item;
+            const currItem = queue.pop() as Item;
             closureSet.add(currItem);
 
             // try to add more items to the queue
@@ -67,7 +67,7 @@ export class LR0Automaton<
                     adjSymbol as GNonTerminalTypes,
                 );
                 const nextItems = adjNonTerminalProductions.map(
-                    (productionRule) => new LR0Item(productionRule),
+                    (productionRule) => new Item(productionRule),
                 );
                 for (const nextItem of nextItems) {
                     if (!closureSet.has(nextItem)) {
@@ -80,9 +80,9 @@ export class LR0Automaton<
         return closureSet;
     }
 
-    public GOTO(stateId: number, symbol: string): LR0GotoSet | null {
-        let items = new LR0ClosureSet();
-        const coreItems = new LR0ClosureSet();
+    public GOTO(stateId: number, symbol: string): GotoSet | null {
+        let items = new ClosureSet();
+        const coreItems = new ClosureSet();
         const stateItems = this.DFAStates.get(stateId)?.items;
         if (stateItems !== undefined) {
             for (const item of stateItems) {
@@ -123,7 +123,7 @@ export class LR0Automaton<
     /**
      * Retrieve the `id` of a state with an identical `coreItem`.
      */
-    private getStateIdWithCoreItems(coreItems: LR0ClosureSet): number | null {
+    private getStateIdWithCoreItems(coreItems: ClosureSet): number | null {
         const coreItemsSignature = coreItems.getSignature();
         const stateId = this.coreItemsIndex.get(coreItemsSignature);
         if (stateId !== undefined) {
@@ -134,20 +134,20 @@ export class LR0Automaton<
     }
 
     private buildDFA() {
-        const startItem = new LR0Item(
+        const startItem = new Item(
             this.language.getRulesOfNonTerminal(AUGMENTED_START as GNonTerminalTypes)[0],
         );
         this.DFAStates.set(0, {
-            coreItems: new LR0ClosureSet([startItem]),
+            coreItems: new ClosureSet([startItem]),
             items: this.CLOSURE(startItem),
             nextStates: {},
         });
         this.indexState(0);
 
         let nextStateId = 1;
-        const queue: [number, LR0DFAState][] = [[0, this.DFAStates.get(0) as LR0DFAState]];
+        const queue: [number, DFAState][] = [[0, this.DFAStates.get(0) as DFAState]];
         while (queue.length > 0) {
-            const [stateId, state] = queue.pop() as [number, LR0DFAState];
+            const [stateId, state] = queue.pop() as [number, DFAState];
             const gotoSymbols = state.items.gotoSymbols() as Set<GSymbols>;
 
             for (const symbol of gotoSymbols) {
@@ -168,7 +168,7 @@ export class LR0Automaton<
                      * and point the transition of current `state` on `symbol` to the new state.
                      */
                     state.nextStates[symbol] = nextStateId;
-                    const nextState: LR0DFAState = {
+                    const nextState: DFAState = {
                         coreItems,
                         items,
                         nextStates: {},

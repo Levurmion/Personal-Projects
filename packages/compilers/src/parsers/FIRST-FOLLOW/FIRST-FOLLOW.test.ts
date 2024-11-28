@@ -58,13 +58,4 @@ describe("FIRST and FOLLOW Testing Suite", () => {
             expect(Array.from(followSet).sort()).toEqual(expectedFollowSets[nonTerminal].sort());
         }
     });
-
-    test("", () => {
-        const language = new Language(arithmeticGrammar);
-        const firstSets = getFIRST(language);
-        const followSets = getFOLLOW(language, firstSets);
-
-        console.log(firstSets);
-        console.log(followSets);
-    });
 });

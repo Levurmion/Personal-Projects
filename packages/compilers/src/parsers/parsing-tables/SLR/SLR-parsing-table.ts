@@ -1,6 +1,6 @@
 import { AUGMENTED_START, TERMINATOR } from "../..";
 import { getFIRSTandFOLLOW } from "../../FIRST-FOLLOW";
-import type { LR0Automaton, LR0Item } from "../../LR0";
+import type { Automaton, Item } from "../../automaton";
 import type { ShiftReduceParserActions, Token } from "../../types";
 import type { ArrayElementType } from "../../utility-types";
 import type { ParsingTable } from "../types";
@@ -13,18 +13,16 @@ export class SLRParsingTable<
     GSymbols extends GTokenTypes | GNonTerminalTypes = GTokenTypes | GNonTerminalTypes,
 > implements ParsingTable<GTokens, GNonTerminals, GTokenTypes, GNonTerminalTypes, GSymbols>
 {
-    private readonly automaton: LR0Automaton<GTokens, GNonTerminals>;
+    private readonly automaton: Automaton<GTokens, GNonTerminals>;
     private readonly followSets: Record<string, Set<GSymbols>>;
     private readonly SLRTable: Record<number, Record<GSymbols, ShiftReduceParserActions>>;
 
-    constructor(automaton: LR0Automaton<GTokens, GNonTerminals>) {
+    constructor(automaton: Automaton<GTokens, GNonTerminals>) {
         this.automaton = automaton;
 
         const { FOLLOW } = getFIRSTandFOLLOW(this.automaton.language);
         this.followSets = FOLLOW as Record<string, Set<GSymbols>>;
         this.SLRTable = this.constructSLRTable();
-
-        console.log(this.followSets);
     }
 
     private constructSLRTable(): Record<number, Record<GSymbols, ShiftReduceParserActions>> {
@@ -40,7 +38,7 @@ export class SLRParsingTable<
                     prev[next.nonTerminal] = next;
                     return prev;
                 },
-                {} as Record<string, LR0Item>,
+                {} as Record<string, Item>,
             );
 
             for (const symbol of this.automaton.language.symbolsSet as Set<GSymbols>) {
@@ -53,7 +51,6 @@ export class SLRParsingTable<
                     if (Object.keys(completedNonTerminals).length > 0) {
                         for (const [nonTerminal, item] of Object.entries(completedNonTerminals)) {
                             const FOLLOW = this.followSets[nonTerminal];
-                            console.log(stateId, symbol, nonTerminal, FOLLOW);
                             if (FOLLOW.has(symbol)) {
                                 if (symbol === TERMINATOR && nonTerminal === AUGMENTED_START) {
                                     parsingTable[stateId][symbol] = {
@@ -96,5 +93,13 @@ export class SLRParsingTable<
         return parsingTable;
     }
 
-    public ACTION_GOTO(state: number, symbol: GSymbols): ShiftReduceParserActions {}
+    public ACTION_GOTO(state: number, symbol: GSymbols): ShiftReduceParserActions {
+        if (this.SLRTable[state]?.[symbol] !== undefined) {
+            return this.SLRTable[state][symbol];
+        } else {
+            return {
+                action: "error",
+            };
+        }
+    }
 }
