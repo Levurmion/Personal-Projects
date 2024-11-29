@@ -174,8 +174,8 @@ export class Automaton<
                         nextStates: {},
                     };
                     this.DFAStates.set(nextStateId, nextState);
-                    this.indexState(nextStateId);
                     queue.unshift([nextStateId, nextState]);
+                    this.indexState(nextStateId);
                     nextStateId++;
                 }
             }

@@ -1,4 +1,4 @@
-import { DOT } from "..";
+import { DOT, EPSILON } from "..";
 import type { ProductionRule } from "../types";
 
 export class Item {
@@ -30,7 +30,7 @@ export class Item {
     }
 
     public shiftDotRight(): Item | null {
-        if (this.dotIdx === this.RHS.length - 1) {
+        if (this.dotIdx === this.RHS.length - 1 || this.getAdjacentSymbol() === EPSILON) {
             return null;
         } else {
             return new Item(this.productionRule, this.dotIdx + 1);

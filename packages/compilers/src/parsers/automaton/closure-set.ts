@@ -1,3 +1,4 @@
+import { EPSILON } from "..";
 import type { Item } from "./item";
 import * as CryptoJS from "crypto-js";
 
@@ -16,6 +17,10 @@ export class ClosureSet implements Iterable<Item> {
                 this.closureSetItems.push(item);
             }
         }
+    }
+
+    public map<P extends (item: Item) => any>(fn: P): ReturnType<P>[] {
+        return this.closureSetItems.map(fn);
     }
 
     public size(): number {
@@ -113,7 +118,9 @@ export class ClosureSet implements Iterable<Item> {
      * `•` is at the end of all symbols in the RHS of the grammar expression.
      */
     public getCompletedItems(): Item[] {
-        return this.closureSetItems.filter((item) => item.shiftDotRight() === null);
+        return this.closureSetItems.filter(
+            (item) => item.shiftDotRight() === null || item.getAdjacentSymbol() === EPSILON,
+        );
     }
 
     // iterator method

@@ -41,6 +41,10 @@ export class SLRParsingTable<
                 {} as Record<string, Item>,
             );
 
+            if (stateId === 9) {
+                console.log(state.items);
+            }
+
             for (const symbol of this.automaton.language.symbolsSet as Set<GSymbols>) {
                 const { nextStates, items } = state;
 
@@ -87,8 +91,6 @@ export class SLRParsingTable<
                 }
             }
         }
-
-        console.log(parsingTable);
 
         return parsingTable;
     }
