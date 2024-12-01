@@ -1,4 +1,3 @@
-import { some } from "lodash";
 import { ReservedTokenTypes, type AugmentedGrammar, type Grammar, type Token } from "./types";
 import type { ArrayElementType } from "./utility-types";
 

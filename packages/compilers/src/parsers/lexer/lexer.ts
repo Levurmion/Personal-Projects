@@ -47,7 +47,7 @@ export class Lexer<
             .filter((token) => token.reservedKeyword)
             .map((token) => ({
                 type: token.type,
-                regex: token.regex ?? new RegExp(`^${token.type}`),
+                regex: token.regex ?? new RegExp(`^(${token.type})`),
             }));
         this.symbolTokens = transformedTokens.filter((token) => token.symbol);
         this.genericTokens = transformedTokens.filter(
@@ -69,7 +69,7 @@ export class Lexer<
                 if (match) {
                     this.tokenStream.push({
                         type: token.type as GTokenTypes,
-                        value: match[0],
+                        value: match[1],
                         line: this.line,
                         col: this.col + 1,
                     });

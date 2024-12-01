@@ -2,12 +2,12 @@ import { createGrammar, EPSILON } from "../";
 
 export const arithmeticGrammar = createGrammar({
     tokens: [
-        { type: "id", regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/ },
-        { type: "number", regex: /\d+(\.\d+)?/ },
-        { type: "+", regex: /\+/, symbol: true },
-        { type: "*", regex: /\*/, symbol: true },
-        { type: "(", regex: /\(/, symbol: true },
-        { type: ")", regex: /\)/, symbol: true },
+        { type: "id", regex: /([a-zA-Z_]+[a-zA-Z0-9_]*)/ },
+        { type: "number", regex: /(\d+(\.\d+)?)/ },
+        { type: "+", regex: /(\+)/, symbol: true },
+        { type: "*", regex: /(\*)/, symbol: true },
+        { type: "(", regex: /(\()/, symbol: true },
+        { type: ")", regex: /(\))/, symbol: true },
     ] as const,
     nonTerminals: ["E", "T", "F"] as const,
     startSymbol: "E",
@@ -20,17 +20,17 @@ export const arithmeticGrammar = createGrammar({
 
 export const jsonGrammar = createGrammar({
     tokens: [
-        { type: "str_lit", regex: /\"(\\.|[^"\\])*\"/ },
-        { type: "num_lit", regex: /-?\d+(\.\d+)?/ },
+        { type: "str_lit", regex: /"((\\.|[^"\\])*)"/ },
+        { type: "num_lit", regex: /(-?\d+(\.\d+)?)/ },
         { type: "true", reservedKeyword: true },
         { type: "false", reservedKeyword: true },
         { type: "null", reservedKeyword: true },
-        { type: "{", regex: /\{/, symbol: true },
-        { type: "}", regex: /\}/, symbol: true },
-        { type: "[", regex: /\[/, symbol: true },
-        { type: "]", regex: /\]/, symbol: true },
-        { type: ":", regex: /:/, symbol: true },
-        { type: ",", regex: /,/, symbol: true },
+        { type: "{", regex: /(\{)/, symbol: true },
+        { type: "}", regex: /(\})/, symbol: true },
+        { type: "[", regex: /(\[)/, symbol: true },
+        { type: "]", regex: /(\])/, symbol: true },
+        { type: ":", regex: /(:)/, symbol: true },
+        { type: ",", regex: /(,)/, symbol: true },
     ] as const,
     nonTerminals: [
         "VALUE",
@@ -68,14 +68,14 @@ export const cyclicGrammar = createGrammar({
 
 export const simpleSqlGrammar = createGrammar({
     tokens: [
-        { type: "id", regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/ },
+        { type: "id", regex: /([a-zA-Z_]+[a-zA-Z0-9_]*)/ },
         { type: "SELECT", reservedKeyword: true },
         { type: "FROM", reservedKeyword: true },
-        { type: ",", regex: /,/, symbol: true },
-        { type: ";", regex: /;/, symbol: true },
-        { type: "(", regex: /\(/, symbol: true },
-        { type: ")", regex: /\)/, symbol: true },
-        { type: "*", regex: /\*/, symbol: true },
+        { type: ",", regex: /(,)/, symbol: true },
+        { type: ";", regex: /(;)/, symbol: true },
+        { type: "(", regex: /(\()/, symbol: true },
+        { type: ")", regex: /(\))/, symbol: true },
+        { type: "*", regex: /(\*)/, symbol: true },
     ] as const,
     nonTerminals: [
         "STATEMENT",
