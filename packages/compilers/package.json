@@ -1,19 +1,23 @@
 {
-  "name": "@repo/compilers",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/crypto-js": "^4.2.2",
-    "@types/lodash": "^4.17.13",
-    "vitest": "^2.1.5"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@repo/shared-utils": "*",
-    "crypto-js": "^4.2.0",
-    "lodash": "^4.17.21"
-  }
+    "name": "@repo/compilers",
+    "module": "index.ts",
+    "type": "module",
+    "scripts": {
+        "test": "npx vitest --coverage"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/crypto-js": "^4.2.2",
+        "@types/lodash": "^4.17.13",
+        "@vitest/coverage-v8": "^2.1.5",
+        "vitest": "^2.1.5"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@repo/shared-utils": "*",
+        "crypto-js": "^4.2.0",
+        "lodash": "^4.17.21"
+    }
 }

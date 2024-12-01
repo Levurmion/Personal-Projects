@@ -2,7 +2,9 @@ import type { ArrayElementType } from "./utility-types";
 
 export interface Token {
     readonly type: string;
-    readonly regex: RegExp;
+    readonly regex?: RegExp;
+    readonly reservedKeyword?: boolean;
+    readonly symbol?: boolean;
 }
 
 export enum ReservedTokenTypes {
@@ -37,6 +39,12 @@ export interface Grammar<
         GTokenTypes | ReservedTokenTypes.EPSILON,
         GNonTerminalTypes
     >;
+    options?: GrammarOptions;
+}
+
+export interface GrammarOptions {
+    ignoreWhitespace?: boolean;
+    ignoreNewline?: boolean;
 }
 
 export interface AugmentedGrammar<

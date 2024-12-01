@@ -1,0 +1,13 @@
+{
+    "level_1": {
+        "level_2": {
+            "array": [1, 2, 3],
+            "true": true,
+            "false": false,
+            "null": null
+        }
+    },
+    "property": "Hello World!",
+    "positive_number": 4.2,
+    "negative_number": -3.22
+}

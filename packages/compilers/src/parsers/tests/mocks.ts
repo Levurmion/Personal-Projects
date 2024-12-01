@@ -3,10 +3,11 @@ import { createGrammar, EPSILON } from "../";
 export const arithmeticGrammar = createGrammar({
     tokens: [
         { type: "id", regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/ },
-        { type: "+", regex: /\+/ },
-        { type: "*", regex: /\*/ },
-        { type: "(", regex: /\(/ },
-        { type: ")", regex: /\)/ },
+        { type: "number", regex: /\d+(\.\d+)?/ },
+        { type: "+", regex: /\+/, symbol: true },
+        { type: "*", regex: /\*/, symbol: true },
+        { type: "(", regex: /\(/, symbol: true },
+        { type: ")", regex: /\)/, symbol: true },
     ] as const,
     nonTerminals: ["E", "T", "F"] as const,
     startSymbol: "E",
@@ -19,17 +20,17 @@ export const arithmeticGrammar = createGrammar({
 
 export const jsonGrammar = createGrammar({
     tokens: [
-        { type: "str_lit", regex: /"(.*)"/ },
+        { type: "str_lit", regex: /\"(\\.|[^"\\])*\"/ },
         { type: "num_lit", regex: /-?\d+(\.\d+)?/ },
-        { type: "true", regex: /true/ },
-        { type: "false", regex: /false/ },
-        { type: "null", regex: /null/ },
-        { type: "{", regex: /\{/ },
-        { type: "}", regex: /\}/ },
-        { type: "[", regex: /\[/ },
-        { type: "]", regex: /\]/ },
-        { type: ":", regex: /:/ },
-        { type: ",", regex: /,/ },
+        { type: "true", reservedKeyword: true },
+        { type: "false", reservedKeyword: true },
+        { type: "null", reservedKeyword: true },
+        { type: "{", regex: /\{/, symbol: true },
+        { type: "}", regex: /\}/, symbol: true },
+        { type: "[", regex: /\[/, symbol: true },
+        { type: "]", regex: /\]/, symbol: true },
+        { type: ":", regex: /:/, symbol: true },
+        { type: ",", regex: /,/, symbol: true },
     ] as const,
     nonTerminals: [
         "VALUE",
@@ -62,5 +63,37 @@ export const cyclicGrammar = createGrammar({
         A: [["B", "dummy"]],
         B: [["C"]],
         C: [["A"]],
+    },
+});
+
+export const simpleSqlGrammar = createGrammar({
+    tokens: [
+        { type: "id", regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/ },
+        { type: "SELECT", reservedKeyword: true },
+        { type: "FROM", reservedKeyword: true },
+        { type: ",", regex: /,/, symbol: true },
+        { type: ";", regex: /;/, symbol: true },
+        { type: "(", regex: /\(/, symbol: true },
+        { type: ")", regex: /\)/, symbol: true },
+        { type: "*", regex: /\*/, symbol: true },
+    ] as const,
+    nonTerminals: [
+        "STATEMENT",
+        "QUERY_EXP",
+        "SELECT_CLAUSE",
+        "FROM_CLAUSE",
+        "COLUMN_IDS",
+        "COLUMN_IDS?",
+        "TABLE_EXP",
+    ] as const,
+    startSymbol: "STATEMENT",
+    nonTerminalProductions: {
+        STATEMENT: [["QUERY_EXP", ";"]],
+        QUERY_EXP: [["SELECT_CLAUSE", "FROM_CLAUSE"]],
+        SELECT_CLAUSE: [["SELECT", "COLUMN_IDS"]],
+        COLUMN_IDS: [["id", "COLUMN_IDS?"]],
+        "COLUMN_IDS?": [[",", "id", "COLUMN_IDS?"], [EPSILON]],
+        FROM_CLAUSE: [["FROM", "TABLE_EXP"]],
+        TABLE_EXP: [["id"], ["(", "QUERY_EXP", ")"]],
     },
 });

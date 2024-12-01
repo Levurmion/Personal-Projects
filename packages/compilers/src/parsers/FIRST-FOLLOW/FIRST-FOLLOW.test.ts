@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { Language } from "../language/language";
-import { arithmeticGrammar, cyclicGrammar, jsonGrammar } from "../tests/mocks";
+import { jsonGrammar } from "../tests/mocks";
 import { getFIRST } from "./FIRST";
 import { getFOLLOW } from "./FOLLOW";
 import { EPSILON } from "..";
