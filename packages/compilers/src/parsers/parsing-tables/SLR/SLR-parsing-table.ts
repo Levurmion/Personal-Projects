@@ -1,5 +1,5 @@
 import { AUGMENTED_START, TERMINATOR } from "../..";
-import { getFIRSTandFOLLOW } from "../../FIRST-FOLLOW";
+import { getFIRSTandFOLLOW } from "../../first-follow";
 import type { Automaton, Item } from "../../automaton";
 import type { ShiftReduceParserActions, Token } from "../../types";
 import type { ArrayElementType } from "../../utility-types";
@@ -40,10 +40,6 @@ export class SLRParsingTable<
                 },
                 {} as Record<string, Item>,
             );
-
-            if (stateId === 9) {
-                console.log(state.items);
-            }
 
             for (const symbol of this.automaton.language.symbolsSet as Set<GSymbols>) {
                 const { nextStates, items } = state;
