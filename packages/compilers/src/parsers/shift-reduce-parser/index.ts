@@ -1,14 +1,22 @@
 import { augmentGrammar } from "..";
+import { Automaton } from "../automaton";
+import { Language } from "../language";
 import { Lexer } from "../lexer";
 import { SLRParsingTable } from "../parsing-tables/SLR/SLR-parsing-table";
-import { jsonGrammar, simpleSqlGrammar } from "../tests/mocks";
+import { jsonGrammar } from "../tests/mocks";
 import { ShiftReduceParser } from "./shift-reduce-parser";
 
-const augmentedJsonGrammar = augmentGrammar(simpleSqlGrammar);
+const augmentedJsonGrammar = augmentGrammar(jsonGrammar);
 const lexer = new Lexer(augmentedJsonGrammar);
 const parser = new ShiftReduceParser(augmentedJsonGrammar, SLRParsingTable);
 
-lexer.tokenize("SELECT column_a, column_b, column_c FROM ( SELECT column_x FROM table_xyz );");
-const result = parser.parseTokens(lexer.tokenStream);
+lexer.tokenize(`{ "array": [1, 2, 3], "object": { "one": 1, "two": 2 } }`);
 
-console.log(result);
+const result = parser.parseTokens(lexer.tokenStream);
+console.log(JSON.stringify(parser.parseTree));
+
+const language = new Language(augmentedJsonGrammar);
+const automaton = new Automaton(language);
+const parsingTable = new SLRParsingTable(automaton);
+
+// console.log((parsingTable as any).SLRTable);
