@@ -4,7 +4,6 @@ import { Language } from "../language";
 import type { LexerToken } from "../lexer";
 import type { ParsingTable, ParsingTableConstructor } from "../parsing-tables/types";
 import type {
-    ASTNode,
     AugmentedGrammar,
     Grammar,
     ReservedTokenTypes,
@@ -38,7 +37,6 @@ export class ShiftReduceParser<
     private parseTreeNodeStack: ParseTreeNode[] = [];
 
     public parseTree: ParseTreeNode | null = null;
-    public AST: ASTNode<GSymbols> | null = null;
 
     constructor(
         augmentedGrammar: AugmentedGrammar<GTokens, AugmentedNonTerminalsTypes[]>,
@@ -134,10 +132,4 @@ export class ShiftReduceParser<
 
         return true;
     }
-
-    private traverseParseTree(parseTreeNode: ParseTreeNode, astNodeParent: ASTNode<GSymbols>) {
-        const parseTreeNodeType = parseTreeNode.type;
-    }
-
-    public buildAST() {}
 }
