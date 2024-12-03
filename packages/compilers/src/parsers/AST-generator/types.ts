@@ -5,10 +5,10 @@ export interface TreeNode {
 
 export interface ParseTreeNode extends TreeNode {
     children?: ParseTreeNode[];
-    action?: "collect" | "push";
+    astNode?: ParseActions;
 }
 
-export interface ASTNode {
+export interface ASTNode extends TreeNode {
     children?: ASTNode[];
 }
 
@@ -17,8 +17,8 @@ export interface ASTNode {
  * push as `children` of the last parent `ASTNode`. Forward the current
  * parent `ASTNode` to the next recursive call.
  */
-type PushAction = {
-    action: "push";
+type ItemASTNode = {
+    type: "item";
 };
 
 /**
@@ -27,9 +27,17 @@ type PushAction = {
  * production rule as `children` of this node. Each child `ASTNode`
  * becomes the new parents of their subtrees.
  */
-type CollectAction = {
-    action: "collect";
-    terms: number[];
+type CollectorASTNode = {
+    type: "collector";
+    includedTerms: number[];
+    nodeValue?: string;
 };
 
-type;
+/**
+ * Emit an `ASTNode`
+ */
+type ListASTNode = {
+    type: "list";
+};
+
+export type ParseActions = ItemASTNode | CollectorASTNode | ListASTNode;

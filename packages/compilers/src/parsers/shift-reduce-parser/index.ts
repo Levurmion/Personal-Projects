@@ -3,14 +3,14 @@ import { Automaton } from "../automaton";
 import { Language } from "../language";
 import { Lexer } from "../lexer";
 import { SLRParsingTable } from "../parsing-tables/SLR/SLR-parsing-table";
-import { extendedJsonGrammar, jsonGrammar } from "../tests/mocks";
+import { arithmeticGrammar, extendedJsonGrammar, jsonGrammar } from "../tests/mocks";
 import { ShiftReduceParser } from "./shift-reduce-parser";
 
-const augmentedJsonGrammar = augmentGrammar(extendedJsonGrammar);
+const augmentedJsonGrammar = augmentGrammar(arithmeticGrammar);
 const lexer = new Lexer(augmentedJsonGrammar);
 const parser = new ShiftReduceParser(augmentedJsonGrammar, SLRParsingTable);
 
-lexer.tokenize(`{ "one": false, "two": true }`);
+lexer.tokenize(`x + y * z + id`);
 
 const result = parser.parseTokens(lexer.tokenStream);
 console.log(JSON.stringify(parser.parseTree));

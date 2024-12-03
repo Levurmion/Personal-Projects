@@ -86,11 +86,8 @@ export const extendedJsonGrammar = createGrammar({
         OBJECT: [["{", "ENTRIES?", "}"]],
         "ENTRIES?": [["ENTRY", "ENTRY?"], [EPSILON]],
         "ENTRY?": [[",", "ENTRY", "ENTRY?"], [EPSILON]],
-        ENTRY: [["KEY", "VALUE"]],
-        KEY: [
-            ["str_lit", ":"],
-            ["num_lit", ":"],
-        ],
+        ENTRY: [["KEY", ":", "VALUE"]],
+        KEY: [["str_lit"], ["num_lit"]],
         ARRAY: [["[", "ELEMENTS?", "]"]],
         "ELEMENTS?": [["VALUE", "ELEMENT?"], [EPSILON]],
         "ELEMENT?": [[",", "VALUE", "ELEMENT?"], [EPSILON]],
