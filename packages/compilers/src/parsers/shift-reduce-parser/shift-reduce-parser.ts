@@ -49,27 +49,44 @@ export class ShiftReduceParser<
         this.symbolsStack = [];
     }
 
+    private getNextAction(
+        state: number,
+        currToken: LexerToken<GSymbols>,
+    ): ShiftReduceParserActions | null {
+        const latestSymbol = this.symbolsStack[this.symbolsStack.length - 1];
+
+        let parserAction: ShiftReduceParserActions | null = null;
+        if (
+            latestSymbol &&
+            this.augmentedLanguage.nonTerminalsSet.has(
+                latestSymbol.type as AugmentedNonTerminalsTypes,
+            )
+        ) {
+            parserAction = this.parsingTable.ACTION_GOTO(state, latestSymbol.type);
+        }
+        if (!parserAction || parserAction.action === "error") {
+            parserAction = this.parsingTable.ACTION_GOTO(state, currToken.type);
+        }
+        if (parserAction.action === "error") {
+            return null;
+        }
+
+        return parserAction;
+    }
+
     public parseTokens(tokenStream: LexerToken<GSymbols>[]): boolean {
         this.stateStack = [0];
 
         while (tokenStream.length > 0) {
             const currToken = tokenStream[0];
             const currState = this.stateStack[this.stateStack.length - 1];
-            const latestSymbol = this.symbolsStack[this.symbolsStack.length - 1];
 
-            let parserAction: ShiftReduceParserActions | null = null;
-            if (
-                latestSymbol &&
-                this.augmentedLanguage.nonTerminalsSet.has(
-                    latestSymbol.type as AugmentedNonTerminalsTypes,
-                )
-            ) {
-                parserAction = this.parsingTable.ACTION_GOTO(currState, latestSymbol.type);
-            }
-            if (!parserAction || parserAction.action === "error") {
-                parserAction = this.parsingTable.ACTION_GOTO(currState, currToken.type);
-            }
-            if (parserAction.action === "error") {
+            let parserAction: ShiftReduceParserActions | null = this.getNextAction(
+                currState,
+                currToken,
+            );
+
+            if (parserAction === null) {
                 return false;
             }
 
@@ -99,12 +116,12 @@ export class ShiftReduceParser<
                         const symbol = production[i];
                         if (symbol !== EPSILON) {
                             this.stateStack.pop();
+                            const topParseTreeNode = this.parseTreeNodeStack.pop();
+                            if (topParseTreeNode) {
+                                nonTerminalParseTreeNode.children?.unshift(topParseTreeNode);
+                            }
                         }
                         this.symbolsStack.pop();
-                        const topParseTreeNode = this.parseTreeNodeStack.pop();
-                        if (topParseTreeNode) {
-                            nonTerminalParseTreeNode.children?.unshift(topParseTreeNode);
-                        }
                     }
                     this.symbolsStack.push({
                         type: nonTerminal,

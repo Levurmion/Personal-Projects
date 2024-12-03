@@ -8,13 +8,13 @@ import {
 
 const RESERVED_GRAMMAR_TERMINALS = new Set<string>(Object.values(ReservedGrammarTerminalTypes));
 
-export const createGrammar = <GTerminals extends Terminal, GNonTerminals extends NonTerminal>(
+export const createGrammar = <GTerminals extends Terminal[], GNonTerminals extends NonTerminal[]>(
     grammarConfig: GrammarConfig<GTerminals, GNonTerminals>,
 ) => {
     const grammarTerminals = [
-        ...grammarConfig.terminals.symbols,
-        ...grammarConfig.terminals.keywords,
-        ...grammarConfig.terminals.generic,
+        ...(grammarConfig.terminals.symbols ?? []),
+        ...(grammarConfig.terminals.keywords ?? []),
+        ...(grammarConfig.terminals.generics ?? []),
     ];
     for (const terminal of grammarTerminals) {
         if (RESERVED_GRAMMAR_TERMINALS.has(terminal.type)) {
