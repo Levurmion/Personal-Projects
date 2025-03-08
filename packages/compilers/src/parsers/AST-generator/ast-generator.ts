@@ -1,7 +1,6 @@
-import { arithmeticParseTree, nestedParseTree, simpleParseTree } from "./mocks";
 import type { ASTNode, ParseTreeNode } from "./types";
 
-function handleListASTNode(parseTreeNode: ParseTreeNode, parentListNode: ASTNode) {
+function resolveListASTNodeItems(parseTreeNode: ParseTreeNode, listASTNode: ASTNode) {
     const { astNode } = parseTreeNode;
 
     if (astNode) {
@@ -14,7 +13,7 @@ function handleListASTNode(parseTreeNode: ParseTreeNode, parentListNode: ASTNode
         switch (astNode.type) {
             case "item": {
                 // The ASTNode is an item - just add to the list
-                parentListNode.children?.push(emittedAstNode);
+                listASTNode.children?.push(emittedAstNode);
                 break;
             }
             case "collector": {
@@ -22,7 +21,7 @@ function handleListASTNode(parseTreeNode: ParseTreeNode, parentListNode: ASTNode
                 // subtree to the list
                 const collectorNode = handleCollectorASTNode(parseTreeNode);
                 if (collectorNode) {
-                    parentListNode.children?.push(collectorNode);
+                    listASTNode.children?.push(collectorNode);
                 }
                 break;
             }
@@ -30,22 +29,33 @@ function handleListASTNode(parseTreeNode: ParseTreeNode, parentListNode: ASTNode
                 // The ASTNode is another list - pass astNode as the new parent
                 // to a recursive call to create a nested list
                 emittedAstNode.children = [];
-                parentListNode.children?.push(emittedAstNode);
-                if (parseTreeNode.children) {
-                    for (const childParseTreeNode of parseTreeNode.children) {
-                        handleListASTNode(childParseTreeNode, emittedAstNode);
-                    }
-                }
+                listASTNode.children?.push(handleListASTNode(parseTreeNode));
             }
         }
     } else {
         // parseTreeNode does not emit an ASTNode - skip to child nodes
         if (parseTreeNode.children) {
             for (const childParseTreeNode of parseTreeNode.children) {
-                handleListASTNode(childParseTreeNode, parentListNode);
+                resolveListASTNodeItems(childParseTreeNode, listASTNode);
             }
         }
     }
+}
+
+function handleListASTNode(parseTreeNode: ParseTreeNode): ASTNode {
+    const listASTNode: ASTNode = {
+        type: parseTreeNode.type,
+        value: parseTreeNode.value,
+        children: [],
+    };
+
+    if (parseTreeNode.children) {
+        for (const childParseTreeNode of parseTreeNode.children) {
+            resolveListASTNodeItems(childParseTreeNode, listASTNode);
+        }
+    }
+
+    return listASTNode;
 }
 
 function handleCollectorASTNode(parseTreeNode: ParseTreeNode): ASTNode | null {
@@ -65,14 +75,11 @@ function handleCollectorASTNode(parseTreeNode: ParseTreeNode): ASTNode | null {
                 return emittedAstNode;
             }
             case "list": {
-                // The ASTNode is a list - use emittedAstNode as a dummy node
-                // to collect the results of `handleListASTNode`
-                emittedAstNode.children = [];
-                handleListASTNode(parseTreeNode, emittedAstNode);
-                return emittedAstNode.children[0];
+                // The ASTNode is a list
+                return handleListASTNode(parseTreeNode);
             }
             case "collector": {
-                // The ASTNode is a collector - only recurse into included terms
+                // The ASTNode is another collector - only recurse into included terms
                 emittedAstNode.value = astNode.nodeValue ?? parseTreeNode.value;
                 emittedAstNode.children = [];
                 const { includedTerms } = astNode;
@@ -104,5 +111,6 @@ function handleCollectorASTNode(parseTreeNode: ParseTreeNode): ASTNode | null {
     }
 }
 
-const AST = handleCollectorASTNode(arithmeticParseTree);
-console.log(JSON.stringify(AST));
+export function generateAST(parseTreeRoot: ParseTreeNode) {
+    return handleCollectorASTNode(parseTreeRoot);
+}

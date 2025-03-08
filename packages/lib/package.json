@@ -1,0 +1,16 @@
+{
+    "name": "@repo/lib",
+    "version": "0.0.0",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": "./src"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "typescript": "latest"
+    },
+    "type": "module"
+}
