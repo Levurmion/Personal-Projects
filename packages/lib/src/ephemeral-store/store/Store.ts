@@ -1,20 +1,20 @@
 import { Action, ReducerFn } from "../types";
 
-export class Store<S, A extends Action, InitArg> {
+export class Store<S, A extends Action, I> {
     private reducer: ReducerFn<S, A>;
     private listeners: Function[] = [];
     private state: S;
 
     constructor(reducerFn: ReducerFn<S, A>);
     constructor(reducerFn: ReducerFn<S, A>, init: S);
-    constructor(reducerFn: ReducerFn<S, A>, init: InitArg, initializer: (init: InitArg) => S);
+    constructor(reducerFn: ReducerFn<S, A>, init: I, initializer: (init: I) => S);
 
-    constructor(reducer: ReducerFn<S, A>, init?: S | InitArg, initializer?: (init: InitArg) => S) {
+    constructor(reducer: ReducerFn<S, A>, init?: S | I, initializer?: (init: I) => S) {
         this.reducer = reducer;
 
         if (init) {
             if (initializer) {
-                this.state = initializer(init as InitArg);
+                this.state = initializer(init as I);
             } else {
                 this.state = init as S;
             }
