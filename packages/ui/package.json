@@ -52,6 +52,7 @@
         "typescript": "5.5.4"
     },
     "dependencies": {
+        "@repo/lib": "*",
         "class-variance-authority": "^0.7.1",
         "d3": "^7.9.0",
         "motion": "^11.11.17",

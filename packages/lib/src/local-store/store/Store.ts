@@ -2,7 +2,7 @@ import { Action, ReducerFn } from "../types";
 
 export class Store<S, A extends Action, I> {
     private reducer: ReducerFn<S, A>;
-    private listeners: Function[] = [];
+    private listeners: Function[];
     private state: S;
 
     constructor(reducerFn: ReducerFn<S, A>);
@@ -11,6 +11,7 @@ export class Store<S, A extends Action, I> {
 
     constructor(reducer: ReducerFn<S, A>, init?: S | I, initializer?: (init: I) => S) {
         this.reducer = reducer;
+        this.listeners = [];
 
         if (init) {
             if (initializer) {
@@ -23,19 +24,21 @@ export class Store<S, A extends Action, I> {
         }
     }
 
-    subscribe(listener: Function) {
+    subscribe = (listener: Function) => {
         this.listeners.push(listener);
-        return () => this.listeners.filter((l) => l !== listener);
-    }
+        return () => {
+            this.listeners = this.listeners.filter((l) => l !== listener);
+        };
+    };
 
-    getSnapshot() {
+    getSnapshot = () => {
         return this.state;
-    }
+    };
 
-    dispatch(action: A) {
+    dispatch = (action: A) => {
         this.state = this.reducer(this.state, action);
         for (const listener of this.listeners) {
             listener();
         }
-    }
+    };
 }

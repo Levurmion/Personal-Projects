@@ -5,12 +5,18 @@
         "dist"
     ],
     "exports": {
-        ".": "./src"
+        "./local-store": "./src/local-store/index.ts"
+    },
+    "scripts": {
+        "check-types": "tsc --noEmit"
     },
     "license": "MIT",
     "devDependencies": {
         "@repo/typescript-config": "*",
         "typescript": "latest"
     },
-    "type": "module"
+    "type": "module",
+    "dependencies": {
+        "react": "^19.0.0"
+    }
 }
