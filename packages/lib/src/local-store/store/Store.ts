@@ -1,6 +1,6 @@
-import { Action, ReducerFn } from "../types";
+import { ReducerFn } from "../types";
 
-export class Store<S, A extends Action, I> {
+export class Store<S, A, I> {
     private reducer: ReducerFn<S, A>;
     private listeners: Function[];
     private state: S;

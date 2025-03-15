@@ -1,10 +1,9 @@
 import { Meta, StoryObj } from "@storybook/react";
 import {
-    LocalStoreContext,
+    createLocalStoreDispatch,
+    createLocalStoreSelector,
     LocalStoreContextProvider,
     useLocalStore,
-    useLocalStoreDispatch,
-    useLocalStoreSelector,
 } from "@repo/lib/local-store";
 import { reducer } from "./LocalStore.reducer";
 import { PropsWithChildren, ReducerState, useState } from "react";
@@ -44,6 +43,9 @@ export const Story = () => {
     );
 };
 
+const useLocalStoreDispatch = createLocalStoreDispatch<typeof reducer>();
+const useLocalStoreSelector = createLocalStoreSelector<typeof reducer>();
+
 const Nesting = ({ children }: PropsWithChildren) => {
     const [count, setCount] = useState(0);
     return (
@@ -57,10 +59,8 @@ const Nesting = ({ children }: PropsWithChildren) => {
 };
 
 const Field = () => {
-    const dispatch = useLocalStoreDispatch<typeof reducer>();
-    const nestedFieldValue = useLocalStoreSelector<typeof reducer>(
-        (state) => state.some.nested.field,
-    );
+    const dispatch = useLocalStoreDispatch();
+    const nestedFieldValue = useLocalStoreSelector((state) => state.some.nested.field);
 
     return (
         <button
